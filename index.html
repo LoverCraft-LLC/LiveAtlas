@@ -29,11 +29,14 @@
             // To configure multiple servers, see https://github.com/JLyne/LiveAtlas/wiki/Configuring-Multiple-Servers.
 
             // Example Squaremap internal webserver configuration
-            // servers: {
-            //   squaremap: {
-            // 	   squaremap: window.location.pathname
-            //   },
-            // },
+            servers: {
+              squaremap1: {
+            	   squaremap: "http://localhost:8081"
+              },
+              squaremap2: {
+            	   squaremap: window.location.pathname
+              },
+            },
 
             // Example Pl3xmap internal webserver configuration
             // servers: {
