@@ -164,9 +164,13 @@ export default class LiveAtlasLayerGroup extends LayerGroup {
 			}, this);
 		//Group isn't zoom limited, but some individual markers are
 		} else if(this._zoomLimitedLayers.size) {
-			this._zoomLimitedLayers.forEach((layer) => {
-				LiveAtlasLayerGroup._isLayerVisible(layer, zoom) ? this._addToMap(layer) : this._removeFromMap(layer);
-			});
+			this.eachLayer((layer) => {
+				if(this._zoomLimitedLayers.has(layer)) {
+					LiveAtlasLayerGroup._isLayerVisible(layer, zoom) ? this._addToMap(layer) : this._removeFromMap(layer);
+				} else if(onAdd) { //Layers without limits still need adding when the group itself is added
+					this._addToMap(layer);
+				}
+			}, this);
 		//Nothing is zoom limited, but we've just been added to the map
 		} else if(onAdd) {
 			this.eachLayer((layer: Layer) => this._addToMap(layer), this._map);
@@ -178,10 +182,10 @@ export default class LiveAtlasLayerGroup extends LayerGroup {
 		return this.options.maxZoom !== undefined || this.options.minZoom !== undefined;
 	}
 
-	//Returns if the given layer has its own zoom limits defined
+	//Returns if the given layer has its own zoom limits defined (either one is enough)
 	private static _isLayerZoomLimited(layer: Layer) {
 		return ((layer as any).options && (layer as any).options.minZoom !== undefined)
-			&& ((layer as any).options && (layer as any).options.maxZoom !== undefined);
+			|| ((layer as any).options && (layer as any).options.maxZoom !== undefined);
 	}
 
 	private static _isLayerVisible(layer: Layer, currentZoom: number) {

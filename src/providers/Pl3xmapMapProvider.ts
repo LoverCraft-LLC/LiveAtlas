@@ -347,6 +347,9 @@ export default class Pl3xmapMapProvider extends MapProvider {
 			tooltipHTML: marker.tooltip,
 			popup: marker.popup,
 			isPopupHTML: true,
+			// optional, so a marker file can show a label only at some zoom levels
+			minZoom: typeof marker.min_zoom === 'number' ? marker.min_zoom : undefined,
+			maxZoom: typeof marker.max_zoom === 'number' ? marker.max_zoom : undefined,
 		};
 	}
 
