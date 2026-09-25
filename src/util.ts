@@ -160,7 +160,8 @@ export const parseMapSearchParams = (query: URLSearchParams): LiveAtlasParsedUrl
  * @private
  */
 const validateParsedUrl = (parsed: any) => {
-	if(typeof parsed.zoom !== 'undefined' && (isNaN(parsed.zoom) || parsed.zoom < 0 || !isFinite(parsed.zoom))) {
+	// A negative zoom is a real level on a map with zoomed-out tiles below 0; the map clamps any zoom to its own range
+	if(typeof parsed.zoom !== 'undefined' && (isNaN(parsed.zoom) || !isFinite(parsed.zoom))) {
 		parsed.zoom = undefined;
 	}
 

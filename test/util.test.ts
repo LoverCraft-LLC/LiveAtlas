@@ -184,7 +184,7 @@ const invalidURLs: [string, URL, LiveAtlasParsedUrl|null][] = [
 			world: 'world',
 			map: 'flat',
 			location: {x: 168, y: 64, z: 1914},
-			zoom: undefined,
+			zoom: -2,
 			legacy: false
 		}
 	],
@@ -250,7 +250,7 @@ const invalidURLs: [string, URL, LiveAtlasParsedUrl|null][] = [
 			world: 'world',
 			map: 'surface',
 			location: {x: 6885, y: 64, z: 24608},
-			zoom: undefined,
+			zoom: -2,
 			legacy: true
 		}
 	],
@@ -321,7 +321,7 @@ const invalidURLs: [string, URL, LiveAtlasParsedUrl|null][] = [
 			world: 'world',
 			map: undefined,
 			location: {x: 6885, y: 64, z: 24608},
-			zoom: undefined,
+			zoom: -2,
 			legacy: true
 		}
 	],

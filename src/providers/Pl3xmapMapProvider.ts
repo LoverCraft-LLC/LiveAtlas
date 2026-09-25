@@ -120,6 +120,11 @@ export default class Pl3xmapMapProvider extends MapProvider {
 			.sort((a: any, b: any) => a.world.order - b.world.order);
 
 		filteredWorlds.forEach(({world, worldResponse}: any) => {
+			if (!worldResponse) {
+				console.warn(`World ${world.name} has no matching world config. Ignoring.`);
+				return;
+			}
+
 			// Which worlds appear is squaremap's per-world "enabled" setting. Only its default
 			// "{world}" names (minecraft:overworld) need tidying; a name set in its config is kept as written
 			if (world.display_name?.startsWith('minecraft:')) {
@@ -169,11 +174,6 @@ export default class Pl3xmapMapProvider extends MapProvider {
 
 			this.worldComponents.set(world.name, worldConfig);
 
-			if (!worldResponse) {
-				console.warn(`World ${world.name} has no matching world config. Ignoring.`);
-				return;
-			}
-
 			let dimension: LiveAtlasDimension = 'overworld';
 
 			if (world.type === 'nether') {
@@ -209,6 +209,10 @@ export default class Pl3xmapMapProvider extends MapProvider {
 
 				nativeZoomLevels: worldResponse.zoom.max || 1,
 				extraZoomLevels: worldResponse.zoom.extra,
+				// Squaremap writes zoom levels 0 and up; levels -1 to -3 (each half the one above) are built
+				// beside them from level 0 by LoverCraft's lf-deploy livemap/zoomout, so the map can show a
+				// whole world at once. Where those tiles are missing, zooming past 0 just shows nothing.
+				minZoom: -3,
 				defaultZoom: worldResponse.zoom.def || 1,
 				tileUpdateInterval: worldResponse.tiles_update_interval ? worldResponse.tiles_update_interval * 1000 : undefined,
 
@@ -347,6 +351,9 @@ export default class Pl3xmapMapProvider extends MapProvider {
 			tooltipHTML: marker.tooltip,
 			popup: marker.popup,
 			isPopupHTML: true,
+			// optional, so a marker file can show a label only at some zoom levels
+			minZoom: typeof marker.min_zoom === 'number' ? marker.min_zoom : undefined,
+			maxZoom: typeof marker.max_zoom === 'number' ? marker.max_zoom : undefined,
 		};
 	}
 
