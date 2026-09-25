@@ -78,6 +78,13 @@ export default defineComponent({
 				const image = document.createElement('img');
 				image.src = badge.iconUrl;
 				image.alt = zone.tooltip;
+
+				// The same size the grid shows it at: badge images are drawn at twice that, to stay sharp
+				if(badge.iconSize) {
+					image.width = badge.iconSize[0];
+					image.height = badge.iconSize[1];
+				}
+
 				element.appendChild(image);
 			} else {
 				element.className = 'leaflet-tooltip-zone__text';
