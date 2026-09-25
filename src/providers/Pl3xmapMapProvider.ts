@@ -118,15 +118,14 @@ export default class Pl3xmapMapProvider extends MapProvider {
 			.sort((a: any, b: any) => a.order - b.order);
 
 		filteredWorlds.forEach((world: any, index: number) => {
-			const allowedWorlds = ["minecraft:overworld", "minecraft:the_nether", "minecraft:the_end"];
-			if (!allowedWorlds.includes(world.display_name)) return;
-
-			console.log(world.display_name)
-
-			world.display_name = world.display_name
-				.replace('minecraft:', '')
-				.replace(/_/g, ' ')
-				.replace(/\w\S*/g, (txt: string) => txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase());
+			// Which worlds appear is squaremap's per-world "enabled" setting. Only its default
+			// "{world}" names (minecraft:overworld) need tidying; a name set in its config is kept as written
+			if (world.display_name?.startsWith('minecraft:')) {
+				world.display_name = world.display_name
+					.replace('minecraft:', '')
+					.replace(/_/g, ' ')
+					.replace(/\w\S*/g, (txt: string) => txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase());
+			}
 
 			const worldResponse = worldResponses[index],
 				worldConfig: { components: LiveAtlasPartialComponentConfig } = {
