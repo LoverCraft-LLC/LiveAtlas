@@ -22,6 +22,9 @@
 			<TileLayerOverlay v-for="[name, overlay] in overlays" :key="name" :options="overlay" :leaflet="leaflet"></TileLayerOverlay>
 			<PlayersLayer v-if="playerMarkersEnabled" :leaflet="leaflet"></PlayersLayer>
 			<MarkerSetLayer v-for="[name, markerSet] in markerSets" :key="name" :markerSet="markerSet" :leaflet="leaflet"></MarkerSetLayer>
+			<ZonesHoverLayer :leaflet="leaflet"></ZonesHoverLayer>
+
+			<MapTogglesControl :leaflet="leaflet"></MapTogglesControl>
 
 			<LogoControl v-for="logo in logoControls" :key="JSON.stringify(logo)" :options="logo" :leaflet="leaflet"></LogoControl>
 			<CoordinatesControl v-if="coordinatesControlEnabled" :leaflet="leaflet"></CoordinatesControl>
@@ -55,10 +58,14 @@ import {LoadingControl} from "@/leaflet/control/LoadingControl";
 import MapContextMenu from "@/components/map/MapContextMenu.vue";
 import LoginControl from "@/components/map/control/LoginControl.vue";
 import TileLayerOverlay from "@/components/map/layer/TileLayerOverlay.vue";
+import ZonesHoverLayer from "@/components/map/layer/ZonesHoverLayer.vue";
+import MapTogglesControl from "@/components/map/control/MapTogglesControl.vue";
 
 export default defineComponent({
 	components: {
 		TileLayerOverlay,
+		ZonesHoverLayer,
+		MapTogglesControl,
 		MapContextMenu,
 		TileLayer,
 		PlayersLayer,

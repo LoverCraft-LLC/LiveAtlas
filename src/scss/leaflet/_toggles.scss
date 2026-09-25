@@ -1,0 +1,136 @@
+/*!
+ * Copyright 2026 LoverCraft
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/* Players and zone-grid buttons under the zoom buttons (MapTogglesControl) */
+.leaflet-control-toggles {
+	position: relative;
+	flex-direction: column;
+
+	/* the button style sets display, which would otherwise beat the hidden attribute */
+	&[hidden], button[hidden] {
+		display: none !important;
+	}
+
+	button {
+		position: relative;
+		border-radius: 0;
+		border-bottom: 0.1rem solid var(--border-color);
+
+		&:first-child {
+			border-top-left-radius: var(--border-radius);
+			border-top-right-radius: var(--border-radius);
+		}
+
+		&:last-of-type {
+			border-bottom-left-radius: var(--border-radius);
+			border-bottom-right-radius: var(--border-radius);
+			border-bottom: none;
+		}
+
+		/* off: faded icon with a slash through it */
+		&[aria-pressed="false"] {
+			.svg-icon {
+				opacity: 0.45;
+			}
+
+			&:after {
+				content: '';
+				position: absolute;
+				left: 22%;
+				right: 22%;
+				top: calc(50% - 0.12rem);
+				height: 0.24rem;
+				border-radius: 0.24rem;
+				background-color: currentColor;
+				transform: rotate(-45deg);
+			}
+		}
+
+		/* zones only under the cursor: the grid icon with a small pointer in the corner */
+		&[aria-pressed="mixed"] {
+			.svg-icon {
+				opacity: 0.8;
+			}
+
+			&:after {
+				content: '';
+				position: absolute;
+				right: 0.5rem;
+				bottom: 0.45rem;
+				width: 1.2rem;
+				height: 1.6rem;
+				background-color: currentColor;
+				clip-path: polygon(0 0, 0 100%, 30% 76%, 50% 100%, 66% 92%, 46% 68%, 82% 68%);
+			}
+		}
+	}
+
+	&.leaflet-control-toggles--single button {
+		border-radius: var(--border-radius);
+		border-bottom: none;
+	}
+}
+
+/* On: the usual pressed look. .leaflet-control clears the background of its direct child buttons unless they are
+   hovered, focused, active or expanded, so this needs as much weight to show */
+.leaflet-control.leaflet-control-toggles > button[aria-pressed="true"]:not(:hover):not(:focus):not(:active) {
+	@include button-pressed;
+}
+
+.leaflet-control-toggles__note {
+	position: absolute;
+	top: 50%;
+	left: calc(100% + var(--ui-element-spacing));
+	transform: translateY(-50%);
+	padding: 0.7rem 1.1rem;
+	border-radius: var(--border-radius);
+	background-color: var(--background-base);
+	box-shadow: var(--box-shadow);
+	color: var(--text-base);
+	font-size: 1.4rem;
+	white-space: nowrap;
+	pointer-events: none;
+	opacity: 0;
+	transition: opacity 0.15s ease-in-out;
+
+	&.leaflet-control-toggles__note--visible {
+		opacity: 1;
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		transition: none;
+	}
+}
+
+/* Zone name beside the cursor in "only under the cursor" mode (ZonesHoverLayer): just the zone's own badge */
+.leaflet-tooltip.leaflet-tooltip-zone {
+	padding: 0;
+	background: none;
+	box-shadow: none;
+	pointer-events: none;
+
+	img {
+		display: block;
+	}
+
+	.leaflet-tooltip-zone__text {
+		padding: 0.5rem 0.8rem;
+		border-radius: var(--border-radius);
+		background-color: var(--background-base);
+		box-shadow: var(--box-shadow);
+		color: var(--text-base);
+	}
+}

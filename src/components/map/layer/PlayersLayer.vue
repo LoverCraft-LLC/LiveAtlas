@@ -24,6 +24,7 @@ import {LayerGroup} from 'leaflet';
 import {useStore} from "@/store";
 import PlayerMarker from "@/components/map/marker/PlayerMarker.vue";
 import LiveAtlasLeafletMap from "@/leaflet/LiveAtlasLeafletMap";
+import {playersShown} from "@/util/mapToggles";
 
 export default defineComponent({
 	components: {
@@ -50,8 +51,21 @@ export default defineComponent({
 
 		watch(playerCount, (newValue) => playerPane.classList.toggle('no-animations', newValue > 150));
 
+		// The viewer's own players toggle (map buttons); the player list in the sidebar stays either way
+		watch(playersShown, shown => {
+			if(shown) {
+				props.leaflet.getLayerManager().addLayer(
+					layerGroup,
+					true,
+					store.state.components.players.markers!.layerName,
+					componentSettings.value!.layerPriority);
+			} else {
+				props.leaflet.removeLayer(layerGroup);
+			}
+		});
+
 		onMounted(() => {
-			if(!componentSettings.value!.hideByDefault) {
+			if(!componentSettings.value!.hideByDefault && playersShown.value) {
 				props.leaflet.getLayerManager().addLayer(
 					layerGroup,
 					true,

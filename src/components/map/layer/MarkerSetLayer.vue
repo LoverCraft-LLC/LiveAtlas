@@ -25,6 +25,7 @@ import {useStore} from "@/store";
 import LiveAtlasLeafletMap from "@/leaflet/LiveAtlasLeafletMap";
 import LiveAtlasLayerGroup from "@/leaflet/layer/LiveAtlasLayerGroup";
 import MapMarkers from "@/components/map/marker/MapMarkers.vue";
+import {ZONES_SET_ID, zonesMode} from "@/util/mapToggles";
 
 export default defineComponent({
 	components: {
@@ -54,6 +55,11 @@ export default defineComponent({
 				priority: props.markerSet.priority,
 			});
 
+		// The zone grid follows the viewer's zones toggle: the whole grid is on the map only when "shown"
+		// ("only under the cursor" draws just the one zone, in ZonesHoverLayer)
+		const isZones = props.markerSet.id === ZONES_SET_ID,
+			hiddenByToggle = () => isZones && zonesMode.value !== 'shown';
+
 		watch(props.markerSet, newValue => {
 			if(newValue && layerGroup) {
 				layerGroup.update({
@@ -64,7 +70,7 @@ export default defineComponent({
 					priority: props.markerSet.priority,
 				});
 
-				if(newValue.hidden) {
+				if(newValue.hidden || hiddenByToggle()) {
 					props.leaflet.getLayerManager()
 						.addHiddenLayer(layerGroup, newValue.label, props.markerSet.priority);
 				} else {
@@ -74,8 +80,19 @@ export default defineComponent({
 			}
 		}, {deep: true});
 
+		if(isZones) {
+			watch(zonesMode, () => {
+				if(props.markerSet.hidden || hiddenByToggle()) {
+					props.leaflet.removeLayer(layerGroup);
+				} else {
+					props.leaflet.getLayerManager()
+						.addLayer(layerGroup, true, props.markerSet.label, props.markerSet.priority);
+				}
+			});
+		}
+
 		onMounted(() => {
-			if(props.markerSet.hidden) {
+			if(props.markerSet.hidden || hiddenByToggle()) {
 				props.leaflet.getLayerManager()
 					.addHiddenLayer(layerGroup, props.markerSet.label, props.markerSet.priority);
 			} else {
