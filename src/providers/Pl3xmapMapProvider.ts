@@ -120,6 +120,11 @@ export default class Pl3xmapMapProvider extends MapProvider {
 			.sort((a: any, b: any) => a.world.order - b.world.order);
 
 		filteredWorlds.forEach(({world, worldResponse}: any) => {
+			if (!worldResponse) {
+				console.warn(`World ${world.name} has no matching world config. Ignoring.`);
+				return;
+			}
+
 			// Which worlds appear is squaremap's per-world "enabled" setting. Only its default
 			// "{world}" names (minecraft:overworld) need tidying; a name set in its config is kept as written
 			if (world.display_name?.startsWith('minecraft:')) {
@@ -168,11 +173,6 @@ export default class Pl3xmapMapProvider extends MapProvider {
 			}
 
 			this.worldComponents.set(world.name, worldConfig);
-
-			if (!worldResponse) {
-				console.warn(`World ${world.name} has no matching world config. Ignoring.`);
-				return;
-			}
 
 			let dimension: LiveAtlasDimension = 'overworld';
 

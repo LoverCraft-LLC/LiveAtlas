@@ -152,7 +152,8 @@ export default class LiveAtlasLayerGroup extends LayerGroup {
 
 		//The whole group is zoom limited
 		if(this._isZoomLimited()) {
-			const visible = zoom >= (this.options.minZoom || -Infinity) && zoom <= (this.options.maxZoom || Infinity);
+			//?? rather than ||: a limit of 0 is a real limit now that maps can zoom below 0
+			const visible = zoom >= (this.options.minZoom ?? -Infinity) && zoom <= (this.options.maxZoom ?? Infinity);
 
 			this.eachLayer((layer) => {
 				//Per marker zoom limits take precedence, if present
