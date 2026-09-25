@@ -115,22 +115,23 @@
 	}
 }
 
-/* Zone name beside the cursor in "only under the cursor" mode (ZonesHoverLayer): just the zone's own badge */
+/* Zone name beside the cursor in "only under the cursor" mode (ZonesHoverLayer): real text, styled like the zone
+   badges on the grid (gold on dark, gold edge), so it is sharp on every screen */
 .leaflet-tooltip.leaflet-tooltip-zone {
 	padding: 0;
 	background: none;
 	box-shadow: none;
 	pointer-events: none;
 
-	img {
-		display: block;
-	}
-
 	.leaflet-tooltip-zone__text {
-		padding: 0.5rem 0.8rem;
-		border-radius: var(--border-radius);
-		background-color: var(--background-base);
-		box-shadow: var(--box-shadow);
-		color: var(--text-base);
+		padding: 0.25rem 0.8rem;
+		border: 0.1rem solid rgba(255, 192, 0, 0.9);
+		border-radius: 1rem;
+		background-color: rgba(17, 17, 17, 0.82);
+		color: #FFC000;
+		font-size: 1.2rem;
+		font-weight: 700;
+		line-height: 1.4;
+		white-space: nowrap;
 	}
 }
