@@ -114,31 +114,31 @@ export default class Pl3xmapMapProvider extends MapProvider {
 		this.worldMarkerUpdateIntervals.clear();
 		this.worldPlayerUpdateIntervals.clear();
 
+		// worldResponses are in settings.json order, so pair them up before sorting by "order"
 		const filteredWorlds = (serverResponse.worlds || []).filter((w: any) => w && !!w.name)
-			.sort((a: any, b: any) => a.order - b.order);
+			.map((world: any, index: number) => ({world, worldResponse: worldResponses[index]}))
+			.sort((a: any, b: any) => a.world.order - b.world.order);
 
-		filteredWorlds.forEach((world: any, index: number) => {
-			const allowedWorlds = ["minecraft:overworld", "minecraft:the_nether", "minecraft:the_end"];
-			if (!allowedWorlds.includes(world.display_name)) return;
+		filteredWorlds.forEach(({world, worldResponse}: any) => {
+			// Which worlds appear is squaremap's per-world "enabled" setting. Only its default
+			// "{world}" names (minecraft:overworld) need tidying; a name set in its config is kept as written
+			if (world.display_name?.startsWith('minecraft:')) {
+				world.display_name = world.display_name
+					.replace('minecraft:', '')
+					.replace(/_/g, ' ')
+					.replace(/\w\S*/g, (txt: string) => txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase());
+			}
 
-			console.log(world.display_name)
-
-			world.display_name = world.display_name
-				.replace('minecraft:', '')
-				.replace(/_/g, ' ')
-				.replace(/\w\S*/g, (txt: string) => txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase());
-
-			const worldResponse = worldResponses[index],
-				worldConfig: { components: LiveAtlasPartialComponentConfig } = {
-					components: {
-						players: {
-							markers: undefined,
-							imageUrl: getDefaultPlayerImage,
-							grayHiddenPlayers: true,
-							showImages: true,
-						}
-					},
-				};
+			const worldConfig: { components: LiveAtlasPartialComponentConfig } = {
+				components: {
+					players: {
+						markers: undefined,
+						imageUrl: getDefaultPlayerImage,
+						grayHiddenPlayers: true,
+						showImages: true,
+					}
+				},
+			};
 
 			this.worldMarkerUpdateIntervals.set(world.name, worldResponse.marker_update_interval || 3000);
 
