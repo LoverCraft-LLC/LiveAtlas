@@ -17,7 +17,7 @@
 <script lang="ts">
 import {computed, defineComponent, onUnmounted, watch} from "vue";
 import {LatLng, LeafletMouseEvent, Polygon, Tooltip} from "leaflet";
-import {Coordinate, LiveAtlasAreaMarker, LiveAtlasPointMarker} from "@/index";
+import {Coordinate, LiveAtlasAreaMarker} from "@/index";
 import {useStore} from "@/store";
 import {nonReactiveState} from "@/store/state";
 import {LiveAtlasMarkerType} from "@/util/markers";
@@ -26,7 +26,7 @@ import LiveAtlasLeafletMap from "@/leaflet/LiveAtlasLeafletMap";
 
 /**
  * "Zones: only under the cursor". The full zone grid is off the map in this mode; instead the zone under the
- * cursor (or the one tapped, on a touch screen) gets its outline, and its name badge follows the cursor. The zone
+ * cursor (or the one tapped, on a touch screen) gets its outline, and its name follows the cursor. The zone
  * is the smallest zone rectangle containing the point, so Spawn wins over the zone around it.
  */
 export default defineComponent({
@@ -69,27 +69,13 @@ export default defineComponent({
 			props.leaflet.closeTooltip(label);
 		};
 
-		const labelFor = (zone: LiveAtlasAreaMarker, areas: LiveAtlasAreaMarker[], badges: LiveAtlasPointMarker[]) => {
-			// The zone's own badge: a badge counts for the smallest zone around it, as with the zone itself
-			const badge = badges.find(point => zoneAt(areas, point.location.x, point.location.z) === zone),
-				element = document.createElement('div');
+		// The zone's name as real text styled like the grid's badges, not the badge image: text stays sharp at any
+		// screen density and size, and it is the zone's own name, never a neighbouring badge's
+		const labelFor = (zone: LiveAtlasAreaMarker) => {
+			const element = document.createElement('div');
 
-			if(badge) {
-				const image = document.createElement('img');
-				image.src = badge.iconUrl;
-				image.alt = zone.tooltip;
-
-				// The same size the grid shows it at: badge images are drawn at twice that, to stay sharp
-				if(badge.iconSize) {
-					image.width = badge.iconSize[0];
-					image.height = badge.iconSize[1];
-				}
-
-				element.appendChild(image);
-			} else {
-				element.className = 'leaflet-tooltip-zone__text';
-				element.textContent = zone.tooltip;
-			}
+			element.className = 'leaflet-tooltip-zone__text';
+			element.textContent = zone.tooltip;
 
 			return element;
 		};
@@ -103,14 +89,11 @@ export default defineComponent({
 				return;
 			}
 
-			const areas: LiveAtlasAreaMarker[] = [],
-				badges: LiveAtlasPointMarker[] = [];
+			const areas: LiveAtlasAreaMarker[] = [];
 
 			markers.forEach(marker => {
 				if(marker.type === LiveAtlasMarkerType.AREA) {
 					areas.push(marker as LiveAtlasAreaMarker);
-				} else if(marker.type === LiveAtlasMarkerType.POINT) {
-					badges.push(marker as LiveAtlasPointMarker);
 				}
 			});
 
@@ -132,7 +115,7 @@ export default defineComponent({
 						: (zone.points as Coordinate[]).map(convert);
 
 				outline = new Polygon(points, {...zone.style, fill: false, interactive: false}).addTo(props.leaflet);
-				label.setContent(labelFor(zone, areas, badges));
+				label.setContent(labelFor(zone));
 			}
 
 			label.setLatLng(e.latlng);
