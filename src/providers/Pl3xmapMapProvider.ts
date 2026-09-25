@@ -114,10 +114,12 @@ export default class Pl3xmapMapProvider extends MapProvider {
 		this.worldMarkerUpdateIntervals.clear();
 		this.worldPlayerUpdateIntervals.clear();
 
+		// worldResponses are in settings.json order, so pair them up before sorting by "order"
 		const filteredWorlds = (serverResponse.worlds || []).filter((w: any) => w && !!w.name)
-			.sort((a: any, b: any) => a.order - b.order);
+			.map((world: any, index: number) => ({world, worldResponse: worldResponses[index]}))
+			.sort((a: any, b: any) => a.world.order - b.world.order);
 
-		filteredWorlds.forEach((world: any, index: number) => {
+		filteredWorlds.forEach(({world, worldResponse}: any) => {
 			// Which worlds appear is squaremap's per-world "enabled" setting. Only its default
 			// "{world}" names (minecraft:overworld) need tidying; a name set in its config is kept as written
 			if (world.display_name?.startsWith('minecraft:')) {
@@ -127,17 +129,16 @@ export default class Pl3xmapMapProvider extends MapProvider {
 					.replace(/\w\S*/g, (txt: string) => txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase());
 			}
 
-			const worldResponse = worldResponses[index],
-				worldConfig: { components: LiveAtlasPartialComponentConfig } = {
-					components: {
-						players: {
-							markers: undefined,
-							imageUrl: getDefaultPlayerImage,
-							grayHiddenPlayers: true,
-							showImages: true,
-						}
-					},
-				};
+			const worldConfig: { components: LiveAtlasPartialComponentConfig } = {
+				components: {
+					players: {
+						markers: undefined,
+						imageUrl: getDefaultPlayerImage,
+						grayHiddenPlayers: true,
+						showImages: true,
+					}
+				},
+			};
 
 			this.worldMarkerUpdateIntervals.set(world.name, worldResponse.marker_update_interval || 3000);
 
