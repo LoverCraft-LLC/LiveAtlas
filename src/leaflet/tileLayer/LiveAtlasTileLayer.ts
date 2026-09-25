@@ -129,7 +129,9 @@ export abstract class LiveAtlasTileLayer extends TileLayer {
 			//Retrieve image via a fetch instead of just setting the src
 			//This works around the fact that browsers usually don't make a request for an image that was previously loaded,
 			//without resorting to changing the URL (which would break caching).
-			const response = await fetch(tile.url, {signal: tile.abortController.signal});
+			//no-cache still uses the cached copy, but re-checks it first (a small 304 when unchanged), so a redrawn tile
+			//shows up even when a CDN stretches the tile's cache lifetime to hours
+			const response = await fetch(tile.url, {signal: tile.abortController.signal, cache: 'no-cache'});
 
 			//Call leaflet's error handler if request fails for some reason
 			if (!response.ok) {
