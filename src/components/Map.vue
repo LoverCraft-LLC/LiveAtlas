@@ -326,6 +326,13 @@ export default defineComponent({
 			} else {
 				console.debug('Moving to', JSON.stringify(target));
 				if(typeof target.zoom !== 'undefined') {
+					//The map only learns a zoom limit below 0 from its tile layer, which can be attached after this
+					//first move; take it from the map definition so a link to a zoomed-out view is not clamped to 0
+					const currentMinZoom = store.state.currentMap?.minZoom;
+					if(typeof currentMinZoom === 'number' && currentMinZoom < this.leaflet!.getMinZoom()) {
+						this.leaflet!.setMinZoom(currentMinZoom);
+					}
+
 					this.leaflet!.setZoom(target.zoom, target.options as ZoomPanOptions);
 				}
 

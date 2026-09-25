@@ -209,6 +209,10 @@ export default class Pl3xmapMapProvider extends MapProvider {
 
 				nativeZoomLevels: worldResponse.zoom.max || 1,
 				extraZoomLevels: worldResponse.zoom.extra,
+				// Squaremap writes zoom levels 0 and up; levels -1 to -3 (each half the one above) are built
+				// beside them from level 0 by LoverCraft's lf-deploy livemap/zoomout, so the map can show a
+				// whole world at once. Where those tiles are missing, zooming past 0 just shows nothing.
+				minZoom: -3,
 				defaultZoom: worldResponse.zoom.def || 1,
 				tileUpdateInterval: worldResponse.tiles_update_interval ? worldResponse.tiles_update_interval * 1000 : undefined,
 
